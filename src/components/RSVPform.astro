@@ -1,0 +1,29 @@
+---
+---
+<form action="rsvpForm" id="rsvpForm">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+    <div>
+        <label for="guests">Number of Guests:</label>
+        <input type="number" id="guests" name="guests" required>
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+    <div>
+        <ul>
+            <li>
+                <input type="radio" id="accepts" name="response" value="accepts" required>
+                <label for="accepts">Joyfully Accepts</label>
+            </li>
+            <li>
+                <input type="radio" id="declines" name="response" value="declines" required>
+                <label for="regrets">Regretfully declines</label>
+            </li>
+        </ul>
+    </div>
+    <button type="submit">Submit</button>
+</form>
