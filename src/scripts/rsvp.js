@@ -1,62 +1,49 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('rsvpForm');
-    if (form) { // Check if the form exists
-        form.addEventListener('submit', (event) => {
-        const name = form.elements['name'].value;
-        const email = form.elements['email'].value;
-        const response = form.elements['response'].value;
-        const guest = form.elements['guests'].value;
-
-        // if (!name.trim()) {
-        //     alert('Please enter your name');
-        //     console.log("name: ", name)
-        //     return;
-        // }
-        // if (!email.trim()) {
-        //     alert('Please enter your email');
-        //     console.log("email: ", email)
-        //     return;
-        // }
-        // if (!isValidEmail(email)) {
-        //     alert('Please enter a valid email');
-        //     console.log("email: ", email)
-        //     return;
-        // }
-        // if (!response) {
-        //     alert('Please select a response');
-        //     console.log("response: ", response)
-        //     return;
-        // }
-        // if (response === 'accept' && guest < 1) {
-        //     alert('Please enter a valid number of guests');
-        //     console.log("guests: ", guest)
-        //     return;
-        // }
-        
-        console.log("name: ", name)
-        console.log("email: ", email)
-        console.log("response: ", response)
-        console.log("guests: ", guest)
-        fetch('/submit-rsvp', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name, email, response, guests }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // Log the response from Flask
-            alert('Thank you for your RSVP!');
-            // Redirect or handle the UI update here
-            window.location.href = '/thank-you-page'; // Adjust the URL as needed
-        })
-        .catch(error => console.error('Error:', error));
-    });
+export async function post({ request }) {
+    try {
+      const formData = await request.formData();
+      const name = formData.get('name').trim();
+      const guestsRaw = formData.get('guests'); // Keep as string for initial validation
+      const email = formData.get('email').trim();
+      const response = formData.get('response').trim();
+  
+      // Initial validation
+      if (!name || !response) {
+        throw new Error("Name and response are required.");
+      }
+  
+      let guests = 0;
+      if (response === "accepts") {
+        guests = parseInt(guestsRaw, 10);
+        if (!email || isNaN(guests) || guests < 1) {
+          throw new Error("Email and a valid number of guests are required for accepting guests.");
+        }
+  
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          throw new Error("Invalid email format.");
+        }
+      }
+  
+      // Insert data into the database
+      // Note: Ensure `db` is correctly imported and initialized
+      await db.insert(db.tables.RSVP).values({
+        name,
+        guests, // Make sure this matches your database schema (e.g., might need a condition to not include it for declines)
+        email: response === "accepts" ? email : null, // Conditionally include email based on response
+        response,
+      });
+  
+      // If everything is okay, return a success response
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 200,
+      });
+    } catch (error) {
+      // If an error occurs (either from validation or database operation), return an error response
+      return new Response(JSON.stringify({ success: false, error: error.message }), {
+        headers: { 'Content-Type': 'application/json' },
+        status: 400, // You might adjust the status code based on the error
+      });
     }
-
-//     function isValidEmail(email) {
-//         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//         return emailRegex.test(email);
-//     }
-// });
+  }
+  
