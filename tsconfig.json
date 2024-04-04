@@ -1,3 +1,13 @@
 {
-  "extends": "astro/tsconfigs/base"
+  "extends": "astro/tsconfigs/base",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "esModuleInterop": true
+    // Add other compiler options here as needed
+  },
+  "include": [
+    "src/**/*",
+    "db/**/*"
+    // You can specify other directories or files to be included
+  ]
 }
