@@ -4,10 +4,9 @@ const RSVP = defineTable({
   columns: {
     id: column.number({ primaryKey: true }),
     name: column.text(),
-    email: column.text(),
-    attending: column.boolean(),
     guests: column.number(),
-    dietaryRestrictions: column.text({ optional: true }),
+    email: column.text(),
+    response: column.text(),
   }
 });
 
