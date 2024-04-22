@@ -1,15 +1,12 @@
 import { defineDb, defineTable, column } from 'astro:db';
 
-const RSVP = defineTable({
+export const RsvpTable = defineTable({
   columns: {
-    id: column.number({ primaryKey: true }),
+    id: column.number({ primaryKey: true, autoIncrement: true }),
     name: column.text(),
-    guests: column.number(),
+    numberOfGuests: column.number(),
     email: column.text(),
-    response: column.text(),
+    phoneNumber: column.text(),
+    attendance: column.text(), 
   }
-});
-
-export default defineDb({
-  tables: { RSVP },
 });
